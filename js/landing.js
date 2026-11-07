@@ -1,4 +1,4 @@
-/* Map page front door: a start button under the chapter text, a scroll-in tagline, and the FAQ link in the footer. Loaded before main.js so the first drawMap is already wrapped. */
+/* Map page front door: a start button under the chapter text, a scroll-in tagline, and the FAQs link in the footer. Loaded before main.js so the first drawMap is already wrapped. */
 (function(){
   var sub=document.getElementById('chSub'); if(!sub) return;
   var cta=document.createElement('div'); cta.className='hero-cta';
@@ -23,5 +23,9 @@
     else{ var io=new IntersectionObserver(function(es){ if(es.some(function(e){return e.isIntersecting})){ all(); io.disconnect(); } },{rootMargin:'0px 0px -30% 0px'}); io.observe(p); }
   }
   var fb=document.getElementById('faqBtn'), fq=document.getElementById('faq');
-  if(fb&&fq) fb.addEventListener('click',function(){ var d=fq.querySelector('details'); if(d) d.open=true; fq.scrollIntoView({behavior:'instant',block:'start'}); });
+  /* the questions stay hidden until the FAQs button is pressed; pressing it again hides them */
+  if(fb&&fq) fb.addEventListener('click',function(){
+    var show=fq.hidden; fq.hidden=!show; fb.setAttribute('aria-expanded',show?'true':'false');
+    if(show){ var d=fq.querySelector('details'); if(d) d.open=true; fq.scrollIntoView({behavior:'instant',block:'start'}); }
+  });
 })();
