@@ -1,4 +1,4 @@
-/* Daily practice: one finger exercise a day for the player's level (a 10-day cycle, reshuffled each cycle, so none repeats within ten days), a five-minute timer, and a calendar of practised and missed days. */
+/* Daily practice: one finger exercise a day for the player's level (a 13-day cycle with the three Fingerstyle Lab patterns mixed in, reshuffled each cycle, so none repeats within thirteen days), a five-minute timer, and a calendar of practised and missed days. */
 var W={ex:null,bump:0,timer:0,left:300,month:null,lvlTip:false};
 function ymd(d){return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
 function dayKey(){return ymd(new Date());}
@@ -23,12 +23,23 @@ function warmData(){
   return w;
 }
 /* the exercise for a date: cycle number picks the shuffle, position in the cycle picks the exercise */
+/* the day's pool for a level: the ten fretting-hand exercises plus that level's three Fingerstyle Lab patterns (picking hand) */
+function warmPickEx(lvl){
+  var tier=FINGER_LEVELS[lvl].name, bpmByTier={Beginner:56,Intermediate:64,Advanced:60};
+  return (window.PICK_DRILLS||[]).filter(function(m){return m.family==='finger'&&m.tier===tier}).map(function(m){
+    return {id:'p-'+m.id,name:'Fingerstyle: '+m.name,bpm:bpmByTier[tier],pick:{kind:m.mode,per:m.per,pattern:m.pattern,chords:m.chords},
+      text:m.desc+' Right-hand pattern over '+m.chords.join(', ')+'. Watch which finger plays which string, then play along: thumb (p) on the bass strings, index (i) on G, middle (m) on B, ring (a) on the high E.',
+      tab:['Pattern: '+m.pattern+'   (r root bass, a alternate bass, 1-6 strings, + together)'],
+      plan:['Minute 1 to 2: watch the animation and play only the first chord, very slowly.','Minute 3 to 4: follow the chords, one bar each.','Minute 5: nudge the metronome up a few bpm if it stays clean.']};
+  });
+}
+function warmPool(lvl){ return FINGER_EX[lvl].concat(warmPickEx(lvl)); }
 function warmLevel(){ var l=warmData().level; return FINGER_EX[l]?l:null; }
-function warmFind(id){ var f=null; Object.keys(FINGER_EX).forEach(function(k){ FINGER_EX[k].forEach(function(x){ if(x.id===id) f=x; }); }); return f||WARM_DO.filter(function(x){return x.id===id})[0]||null; }
+function warmFind(id){ var f=null; Object.keys(FINGER_EX).forEach(function(k){ warmPool(k).forEach(function(x){ if(x.id===id) f=x; }); }); return f||WARM_DO.filter(function(x){return x.id===id})[0]||null; }
 function exerciseFor(d,bump){
-  var pool=FINGER_EX[warmLevel()||'beginner'], n=dayIndex(d), cyc=Math.floor(n/10), pos=((n%10)+10)%10, order=sshuffle(pool.map(function(_,i){return i}),srand(cyc*2654435761+1));
-  var i=order[(pos+(bump||0))%10], x=pool[i];
-  var o={id:x.id,name:x.name,secs:300,text:x.text,tab:x.tab,plan:x.plan,bpm:x.bpm,anim:x.anim,per:x.per,cue:x.cue,nofinger:x.nofinger};
+  var pool=warmPool(warmLevel()||'beginner'), L=pool.length, n=dayIndex(d), cyc=Math.floor(n/L), pos=((n%L)+L)%L, order=sshuffle(pool.map(function(_,i){return i}),srand(cyc*2654435761+1));
+  var i=order[(pos+(bump||0))%L], x=pool[i];
+  var o={id:x.id,name:x.name,secs:300,text:x.text,tab:x.tab,plan:x.plan,bpm:x.bpm,anim:x.anim,per:x.per,cue:x.cue,nofinger:x.nofinger,pick:x.pick};
   if(x.chords){ var pairs=[['G','C'],['C','Am'],['D','G'],['Em','A'],['Am','Dm'],['E','A'],['G','Em'],['D','A']]; o.pair=pairs[Math.floor(r()*pairs.length)]; }
   return o;
 }
@@ -62,7 +73,7 @@ function warmAsk(){
   });
   var cur=warmLevel(); if(cur){ var n=document.createElement('p'); n.className='jsub'; n.textContent='You can change this any time. Your streak and calendar stay.'; host.appendChild(n); }
 }
-function warmStop(){ clearInterval(W.timer); W.timer=0; if(typeof BK!=='undefined'&&BK.on) bkStop(); if(typeof faPause==='function') faPause(); }
+function warmStop(){ clearInterval(W.timer); W.timer=0; if(typeof BK!=='undefined'&&BK.on) bkStop(); if(typeof faPause==='function') faPause(); if(typeof pkPause==='function'&&window.PK&&PK.built) pkPause(); }
 function warmRender(){
   warmStop(); faPark(); var host=$('#warmRoot'), w=warmData(), today=new Date(), tk=ymd(today), done=w.days.hasOwnProperty(tk); host.innerHTML='';
   var ex=W.ex=exerciseFor(today,W.bump), st=warmStreak(w), lvl=warmLevel(), lvName=FINGER_LEVELS[lvl].name;
@@ -73,7 +84,7 @@ function warmRender(){
   left.appendChild(warmLevelRow());
   if(W.lvlTip){
     var tip=document.createElement('div'); tip.className='lvltip'; tip.setAttribute('role','note');
-    tip.innerHTML='<p><b>You are on the '+lvName+' level.</b> Each level has its own ten exercises: '+FINGER_LEVELS.beginner.name+' is easy and slow, '+FINGER_LEVELS.intermediate.name+' adds hammer-ons and pull-offs, and '+FINGER_LEVELS.advanced.name+' is four-finger legato and speed. If today feels too easy or too hard, switch with the <b>Your level</b> buttons above, any time. Your streak and calendar stay.</p><div class="row"></div>';
+    tip.innerHTML='<p><b>You are on the '+lvName+' level.</b> Each level has its own ten finger exercises plus three picking patterns: '+FINGER_LEVELS.beginner.name+' is easy and slow, '+FINGER_LEVELS.intermediate.name+' adds hammer-ons and pull-offs, and '+FINGER_LEVELS.advanced.name+' is four-finger legato and speed. If today feels too easy or too hard, switch with the <b>Your level</b> buttons above, any time. Your streak and calendar stay.</p><div class="row"></div>';
     mkBtn(tip.querySelector('.row'),'Got it','primary',function(){ W.lvlTip=false; tip.remove(); var r=host.querySelector('.lvlrow'); if(r) r.classList.remove('nudge'); });
     left.appendChild(tip);
   }
@@ -91,18 +102,20 @@ function warmRender(){
   var bpm=ex.bpm!==undefined?ex.bpm:(ex.pair?72:(/\b(\d\d) bpm/.test(ex.text)?+/\b(\d\d) bpm/.exec(ex.text)[1]:70));
   /* the animated neck and the metronome box (top right): this exercise's notes, walked one at a time */
   var phrases=[]; try{ phrases=ex.anim?faParse(ex.anim,{nofinger:ex.nofinger}):[]; }catch(e){ phrases=[]; }
-  if(bpm&&phrases.length) metroSet('bpm',bpm);
-  if(phrases.length) faMount(card.querySelector('#wAnim'),mslot,{id:ex.id,phrases:phrases,per:ex.per||1,loop:true,noPlay:true,tip:ex.cue||''});
+  var pk=ex.pick; if(pk) phrases=[]; var anim=phrases.length||pk;
+  if(bpm&&anim) metroSet('bpm',bpm);
+  if(pk) pkMount(card.querySelector('#wAnim'),mslot,{id:ex.id,kind:pk.kind,chords:pk.chords,pattern:pk.pattern,per:pk.per,noPlay:true,tip:'Thumb (p) on the bass strings, index (i) on G, middle (m) on B, ring (a) on the high E.',legend:'p thumb, i index, m middle, a ring. "p+a" means pinch: both together.'});
+  else if(phrases.length) faMount(card.querySelector('#wAnim'),mslot,{id:ex.id,phrases:phrases,per:ex.per||1,loop:true,noPlay:true,tip:ex.cue||''});
   var go=mkBtn(row,'Start the timer','primary',function(){
     if(W.timer){ warmStop(); go.textContent='Resume'; return; }
     go.textContent='Pause'; initAudio();
-    if(phrases.length) faPlay(); else if(bpm) bkStart({bpm:bpm,bpc:4,bpb:4,style:'click',seq:ex.pair||['C'],loop:true,countIn:0,vol:.6});
+    if(pk) pkPlay(); else if(phrases.length) faPlay(); else if(bpm) bkStart({bpm:bpm,bpc:4,bpb:4,style:'click',seq:ex.pair||['C'],loop:true,countIn:0,vol:.6});
     W.timer=setInterval(function(){ W.left--; tm.textContent=fmt(Math.max(0,W.left)); if(W.left<=0){ warmStop(); tm.textContent='Time'; warmMark(ex); } },1000);
   });
   var mk2=mkBtn(row,done?'Practised today':'Mark as practised','',function(){ warmStop(); warmMark(ex); });
   if(done) mk2.disabled=true;
   if(!done) mkBtn(row,'Try a different one','quiet',function(){W.bump++; warmRender()});
-  var metro=document.createElement('p'); metro.className='jsub'; metro.textContent=(phrases.length?(bpm?'The metronome box at the top right is set to '+bpm+' bpm for this one. ':'This one has no click. Go slowly. '):(bpm?'The click runs at '+bpm+' bpm. ':'This one has no click. Go slowly. '))+(bpm?'Start slower if it is not clean, and only speed up when it is. ':'')+'The timer starts the animation and the click together; pause it any time. Tap "Mark as practised" any time, even if you played without the timer.'; card.insertBefore(metro,card.querySelector('.wtab'));
+  var metro=document.createElement('p'); metro.className='jsub'; metro.textContent=(anim?(bpm?'The metronome box at the top right is set to '+bpm+' bpm for this one. ':'This one has no click. Go slowly. '):(bpm?'The click runs at '+bpm+' bpm. ':'This one has no click. Go slowly. '))+(bpm?'Start slower if it is not clean, and only speed up when it is. ':'')+'The timer starts the animation and the click together; pause it any time. Tap "Mark as practised" any time, even if you played without the timer.'; card.insertBefore(metro,card.querySelector('.wtab'));
   var tvb=mkBtn(card.querySelector('.row'),'Show on TV','quiet',function(){ if(window.castDaily) castDaily(); toast('Sent to the TV. The timer starts in three seconds.'); }); tvb.classList.add('cast-only'); tvb.hidden=!(window.castConnected&&castConnected());
   var rb=mkBtn(card.querySelector('.row'),'Daily reminder','quiet',function(){openPrefs()}); rb.setAttribute('aria-label','Set a daily reminder');
   grid.appendChild(warmCalendar(w));

@@ -49,5 +49,18 @@ with sync_playwright() as p:
     check('path drill after a pick drill: box and board mounted',pg.locator('#drMetro').is_visible() and pg.locator('#pkBlock').is_visible()==False)
     pg.evaluate("location.hash='map'"); pg.wait_for_selector('#v-map:not([hidden])')
     check('header metronome is back on the map',pg.locator('#metroBtn').is_visible() and not pg.locator('#drMetro').is_visible())
+    # Daily: the picking-hand patterns are in each level's pool and animate inside the card
+    for lv in ('beginner','intermediate','advanced'):
+        check('Daily %s pool has 3 fingerstyle patterns'%lv,pg.evaluate("warmPool('%s').filter(x=>x.pick).length"%lv)==3)
+    pg.evaluate("location.hash='warmup'"); pg.wait_for_selector('#v-warm:not([hidden]) .lvlpick')
+    pg.locator('.lvlbtn').first.click(); pg.wait_for_selector('#v-warm .wcard')
+    ok=pg.evaluate("(()=>{for(var i=0;i<14;i++){ if(W.ex.pick) return true; W.bump++; warmRender(); } return false})()")
+    check('a fingerstyle pattern comes up in Daily within the cycle',ok)
+    check('Daily pattern: grid, board and top-right metronome are shown',pg.locator('.wcard #pkGrid .pk-cell').count()>=4 and pg.locator('.wcard #boardK').is_visible() and pg.locator('#drMetro').is_visible() and not pg.locator('#pkPlay').is_visible())
+    pg.locator('.wcard .row .btn:has-text("Start the timer")').click(); pg.wait_for_function("window.__FRETROAD_TEST.PK.i>=2",timeout=12000)
+    check('the timer starts the pattern and the click',pg.evaluate("__FRETROAD_TEST.PK.playing && __FRETROAD_TEST.MT.on"))
+    pg.locator('.wcard .row .btn:has-text("Pause")').click()
+    pg.evaluate("location.hash='map'"); pg.wait_for_selector('#v-map:not([hidden])')
+    check('header metronome back after Daily',pg.locator('#metroBtn').is_visible())
     check('no errors',not errs,errs); b.close()
 print('ui_pick:',('ALL PASS' if all(res) else 'FAILURES'))

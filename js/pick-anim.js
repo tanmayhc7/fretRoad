@@ -67,7 +67,7 @@ function pkMount(slot,metroSlot,spec){
   slot.appendChild($('#pkBlock')); metroSlot.appendChild($('#drMetro')); document.body.classList.add('on-drill'); PK.mounted=true; FA.mounted=false; FA_ENG=PK;
   PK.spec=spec; PK.kind=spec.kind; PK.chords=spec.chords; PK.slots=pkParse(spec.kind,spec.pattern); PK.spb=PK.slots.length; PK.per=spec.per||2;
   PK.loop=true; PK.click=FA.click; PK.i=-1; PK.drawnBar=-1;
-  $('#pkLoop').checked=true; $('#dmClick').checked=PK.click; $('#dmSig').value=MT.num+'/'+MT.den;
+  $('#pkLoop').checked=true; $('#pkPlay').hidden=!!spec.noPlay; $('#dmClick').checked=PK.click; $('#dmSig').value=MT.num+'/'+MT.den;
   var bars=$('#pkBars'); bars.innerHTML=''; PK.chords.forEach(function(c,i){ var e=document.createElement('span'); e.className='chip'; e.textContent=c; e.dataset.bar=i; bars.appendChild(e); });
   var g=$('#pkGrid'); g.innerHTML=''; g.style.setProperty('--cols',PK.per===3?6:Math.min(8,PK.spb));
   var lab=pkLabels(PK.per,PK.spb);

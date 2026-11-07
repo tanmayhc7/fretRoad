@@ -23,3 +23,6 @@ Fingerstyle: `r` root bass, `a` alternate bass, `1`-`6` a string (1 = high E), `
 Push an entry in `PICK_DRILLS` (id letters only, `family`, `tier`, `mode`, `per`, `pattern`, `chords`). Chords must exist in `PK_CHORDS`.
 
 Tests: `tests/ui_pick.py`.
+
+## In Daily
+Each level's Daily pool is its ten fretting-hand exercises plus that level's three Fingerstyle Lab patterns (`warmPool` in `js/warmup.js`), a 13-day cycle. A picking pattern shows the same hand panel, pattern grid and top-right metronome box inside the Daily card; the timer starts it.
