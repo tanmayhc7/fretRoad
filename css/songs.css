@@ -281,3 +281,8 @@ html.light .pk-bg{fill:rgba(255,255,255,.8)}
 .pk-cell.done{opacity:.45}
 .pk-cell.cur{background:#e6b95f;color:#10142e;transform:scale(1.08);opacity:1}
 @media (prefers-reduced-motion:reduce){.pk-pick,.pk-pick circle,.pk-cell{transition:none}}
+@media (max-width:600px){
+  .lab{padding:12px 8px;margin-inline:-8px;border-radius:16px}
+  .labname{font-size:1.3rem}
+  .pk-cell b{font-size:1rem}
+}
