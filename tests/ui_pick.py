@@ -13,12 +13,10 @@ with sync_playwright() as p:
     pg=ctx.new_page(); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
     pg.goto(URL+'#map'); pg.wait_for_selector('#mods .mod',state='attached')
     pg.evaluate("document.querySelectorAll('.overlay').forEach(function(o){o.hidden=true})")
-    names=pg.locator('.lab .labname').all_inner_texts()
-    check('two blocks: Strum Lab and Fingerstyle Lab',names==['Strum Lab','Fingerstyle Lab'],names)
-    for fam in ('strum','finger'):
-        tiers=pg.locator('.lab-%s .labtier'%fam).all_text_contents()
-        check(fam+' block has Beginner, Intermediate, Advanced',tiers==['Beginner','Intermediate','Advanced'],tiers)
-        check(fam+' block has 3 drills per level',all(pg.locator('.lab-%s .mods'%fam).nth(i).locator('.mod').count()==3 for i in range(3)))
+    check('no separate Strum Lab / Fingerstyle Lab blocks',pg.locator('.lab').count()==0)
+    per=pg.evaluate("(()=>{var o={};['Beginner','Intermediate','Advanced'].forEach(t=>{var g=[...document.querySelectorAll('#mods .tier')].filter(h=>h.textContent===t)[0].nextElementSibling; o[t]={strum:[...g.querySelectorAll('.mod .tag')].filter(x=>x.textContent.startsWith('Strumming')).length,finger:[...g.querySelectorAll('.mod .tag')].filter(x=>x.textContent.startsWith('Fingerpicking')).length,other:[...g.querySelectorAll('.mod .tag')].filter(x=>!/^(Strumming|Fingerpicking)/.test(x.textContent)).length}}); return o})()")
+    check('each level list has 3 strumming and 3 fingerpicking drills among the other drills',all(v['strum']==3 and v['finger']==3 and v['other']>0 for v in per.values()),per)
+    check('picking drills are tagged and need no mic',pg.locator('.mod[data-id="strumfolk"] .tag').inner_text().startswith('Strumming') and 'no mic' in pg.locator('.mod[data-id="fingertravis"] .tag').inner_text())
     # pattern parsing
     r=pg.evaluate("(()=>{var o={}; __FRETROAD_TEST.PICK_DRILLS.forEach(function(m){ try{ var n=pkParse(m.mode,m.pattern).length; o[m.id]=n%(m.per)==0||m.per==3?n:-n }catch(e){ o[m.id]='ERR '+e.message } }); return o})()")
     check('every pattern parses and fills whole beats',all(isinstance(v,int) and v>0 for v in r.values()),r)
@@ -49,17 +47,23 @@ with sync_playwright() as p:
     check('path drill after a pick drill: box and board mounted',pg.locator('#drMetro').is_visible() and pg.locator('#pkBlock').is_visible()==False)
     pg.evaluate("location.hash='map'"); pg.wait_for_selector('#v-map:not([hidden])')
     check('header metronome is back on the map',pg.locator('#metroBtn').is_visible() and not pg.locator('#drMetro').is_visible())
-    # Daily: the picking-hand patterns are in each level's pool and animate inside the card
-    for lv in ('beginner','intermediate','advanced'):
-        check('Daily %s pool has 3 fingerstyle patterns'%lv,pg.evaluate("warmPool('%s').filter(x=>x.pick).length"%lv)==3)
-    pg.evaluate("location.hash='warmup'"); pg.wait_for_selector('#v-warm:not([hidden]) .lvlpick')
+    # Daily: two tracks (strumming with a pick, fingerpicking), three levels each, picking patterns mixed with the fretting exercises
+    for tr in ('strum','finger'):
+        for lv in ('beginner','intermediate','advanced'):
+            check('Daily %s / %s pool has 3 patterns plus the 10 fretting exercises'%(tr,lv),pg.evaluate("(()=>{var p=warmPool('%s','%s'); return p.filter(x=>x.pick&&x.pick.kind==='%s').length==3&&p.length==13})()"%(lv,tr,tr)))
+    pg.evaluate("location.hash='warmup'"); pg.wait_for_selector('#v-warm:not([hidden]) .trackpick')
+    check('Daily opens with two options',pg.locator('.trackbtn').count()==2)
+    pg.locator('.trackbtn[data-track="strum"]').click(); pg.wait_for_selector('#v-warm .lvlpick:not(.trackpick)')
     pg.locator('.lvlbtn').first.click(); pg.wait_for_selector('#v-warm .wcard')
+    check('the track switcher is always visible with strumming selected',pg.locator('.trackseg').count()==2 and 'Strumming' in pg.locator('.trackseg.on').inner_text())
     ok=pg.evaluate("(()=>{for(var i=0;i<14;i++){ if(W.ex.pick) return true; W.bump++; warmRender(); } return false})()")
-    check('a fingerstyle pattern comes up in Daily within the cycle',ok)
+    check('a strumming pattern comes up in Daily within the cycle',ok and pg.evaluate("W.ex.pick.kind")=='strum')
     check('Daily pattern: grid, board and top-right metronome are shown',pg.locator('.wcard #pkGrid .pk-cell').count()>=4 and pg.locator('.wcard #boardK').is_visible() and pg.locator('#drMetro').is_visible() and not pg.locator('#pkPlay').is_visible())
     pg.locator('.wcard .row .btn:has-text("Start the timer")').click(); pg.wait_for_function("window.__FRETROAD_TEST.PK.i>=2",timeout=12000)
     check('the timer starts the pattern and the click',pg.evaluate("__FRETROAD_TEST.PK.playing && __FRETROAD_TEST.MT.on"))
     pg.locator('.wcard .row .btn:has-text("Pause")').click()
+    pg.locator('.trackseg:has-text("Fingerpicking")').click(); pg.wait_for_selector('#v-warm .wcard')
+    check('switching track keeps the level and swaps the pool',pg.evaluate("save.warm.track")=='finger' and pg.evaluate("warmPool(warmLevel()).filter(x=>x.pick)[0].pick.kind")=='finger')
     pg.evaluate("location.hash='map'"); pg.wait_for_selector('#v-map:not([hidden])')
     check('header metronome back after Daily',pg.locator('#metroBtn').is_visible())
     check('no errors',not errs,errs); b.close()

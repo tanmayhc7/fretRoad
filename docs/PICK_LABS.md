@@ -1,7 +1,7 @@
-# Strum Lab and Fingerstyle Lab
+# Strumming and fingerpicking drills
 
-Two blocks at the top of Practice (Drills). Each has Beginner, Intermediate and Advanced levels with three drills each.
-They are watch-and-play-along drills: no mic. Names are the `PICK_FAMILIES` constants in `js/drills-pick.js`.
+Eighteen drills (nine strumming with a pick, nine fingerpicking), three per level, listed in the normal Beginner, Intermediate and Advanced tiers of Practice (Drills) and tagged Strumming or Fingerpicking.
+They are watch-and-play-along drills: no mic. Track names are the `PICK_FAMILIES` constants in `js/drills-pick.js`.
 
 ## What the screen shows
 - The chord of the current bar lit on the fretboard (root in brass), the struck strings wobbling.
@@ -25,4 +25,4 @@ Push an entry in `PICK_DRILLS` (id letters only, `family`, `tier`, `mode`, `per`
 Tests: `tests/ui_pick.py`.
 
 ## In Daily
-Each level's Daily pool is its ten fretting-hand exercises plus that level's three Fingerstyle Lab patterns (`warmPool` in `js/warmup.js`), a 13-day cycle. A picking pattern shows the same hand panel, pattern grid and top-right metronome box inside the Daily card; the timer starts it.
+Daily opens on a choice: **Strumming with a pick** or **Fingerpicking** (`warmTrackAsk`, saved as `save.warm.track`), then the level. A switcher for the track and one for the level stay visible. A track's pool for a level is the ten fretting-hand exercises plus that track's three patterns (`warmPool(level, track)` in `js/warmup.js`), a 13-day cycle. A pattern shows the hand panel, pattern grid and top-right metronome box inside the Daily card; the timer starts it. Players who had already chosen a level see the track choice once.

@@ -39,7 +39,7 @@ with sync_playwright() as p:
     with pg.expect_download() as dl: pg.locator('#remIcs').click()
     path=dl.value.path(); txt=open(path).read(); check('ics has daily repeat and alarm','RRULE:FREQ=DAILY' in txt and 'VALARM' in txt and 'DTSTART:' in txt)
     pg.evaluate("delete save.warm.days[ymd(new Date())]; persist()"); pg.locator('#prefClose').click()
-    pg.goto(URL+'#warmup'); pg.wait_for_selector('#v-warm:not([hidden]) .lvlpick')
+    pg.goto(URL+'#warmup'); pg.wait_for_selector('#v-warm:not([hidden]) .trackpick'); pg.locator('.trackbtn[data-track="finger"]').click(); pg.wait_for_selector('#v-warm:not([hidden]) .lvlpick:not(.trackpick)')
     check('asks for the level first',pg.locator('.lvlbtn').count()==3)
     pg.locator('.lvlbtn:has-text("Intermediate")').click(); pg.wait_for_selector('#v-warm .wcard')
     check('level saved',pg.evaluate("save.warm.level")=='intermediate')

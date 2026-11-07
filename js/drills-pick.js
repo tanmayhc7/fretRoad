@@ -1,10 +1,10 @@
-/* Strum Lab and Fingerstyle Lab: two animated Practice blocks, each with Beginner, Intermediate and Advanced drills.
+/* Strumming with a pick and Fingerpicking: animated drills in the normal Beginner, Intermediate and Advanced lists (and the two Daily tracks).
    Watch the picking hand, hear the pattern, play along with the metronome box. No mic needed.
    The animation engine is pick-anim.js; the screen is #v-path (route #practice-<id>, ids are letters only).
-   Block names are the two constants below. Loaded after drills-paths.js, so PRACTICE.push runs before drawMods. */
+   Track names are the two constants below. Loaded after drills-paths.js, so PRACTICE.push runs before drawMods. */
 var PICK_FAMILIES=[
- {id:'strum',  name:'Strum Lab',       blurb:'Strumming with a pick: down and up strokes, skipped slots, accents and chucks. Watch the hand, then play along.'},
- {id:'finger', name:'Fingerstyle Lab', blurb:'Picking with your fingers: thumb on the bass, fingers on the thin strings. Watch which finger plays which string.'}
+ {id:'strum',  name:'Strumming with a pick', blurb:'Down and up strokes, skipped slots, accents and chucks. Watch the hand, then play along.'},
+ {id:'finger', name:'Fingerpicking',        blurb:'Thumb on the bass, fingers on the thin strings. Watch which finger plays which string.'}
 ];
 var STRUM_TIP='Down on the numbers, up on the &. Keep the hand moving even when a slot is skipped.';
 var FINGER_TIP='Thumb (p) on the bass strings, index (i) on G, middle (m) on B, ring (a) on the high E.';
@@ -38,7 +38,7 @@ if(window.__FRETROAD_TEST) window.__FRETROAD_TEST.PICK_DRILLS=PICK_DRILLS;
 function showPick(M){
   showView('path'); updateStat();
   var fam=PICK_FAMILIES.filter(function(f){return f.id===M.family})[0];
-  $('#dWhere').textContent=fam.name+' · '+M.tier; $('#dTitle').textContent=M.name; $('#dSub').textContent=M.desc;
+  $('#dWhere').textContent='Practice · '+M.tier+' · '+fam.name; $('#dTitle').textContent=M.name; $('#dSub').textContent=M.desc;
   pkMount($('#dSlot'),$('#dMetroSlot'),{id:M.id,kind:M.mode,chords:M.chords,pattern:M.pattern,per:M.per,
     tip:M.family==='strum'?STRUM_TIP:FINGER_TIP,legend:M.family==='strum'?STRUM_KEY:FINGER_KEY,
     onRound:function(){ (save.pathRuns||(save.pathRuns={}))[M.id]=(save.pathRuns[M.id]||0)+1; persist(); }});
