@@ -248,3 +248,36 @@ html.light .dm-bpm input[type=number]{color:#1c2033}
 .lvltip{max-width:62ch;margin:0 0 10px;padding:12px 16px;border-radius:16px;border:1px solid rgba(230,185,95,.5);background:rgba(230,185,95,.08)}.lvltip p{margin:0 0 6px}.lvltip .row{margin:4px 0 0}
 .warmgrid.wide{grid-template-columns:1fr}.warmgrid.wide .cal{max-width:560px}
 .wanim{margin:12px 0 6px}
+
+/* Strum Lab and Fingerstyle Lab */
+.lab{margin:18px 0 26px;padding:16px 18px;border-radius:20px;border:1px solid rgba(230,185,95,.3);background:rgba(14,20,58,.35)}
+html.light .lab{background:rgba(255,255,255,.7)}
+.labname{font-size:1.5rem;margin:0 0 4px}
+.labtier{margin:14px 0 6px;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;opacity:.75}
+.pk-row{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:14px;align-items:start;margin:10px 0}
+@media (max-width:760px){.pk-row{grid-template-columns:1fr}}
+#pkHand{width:100%;height:auto;display:block}
+.pk-bg{fill:rgba(8,12,38,.6);stroke:rgba(230,185,95,.3)}
+html.light .pk-bg{fill:rgba(255,255,255,.8)}
+.pk-str{stroke:#c9ccd8;stroke-linecap:round}
+.pk-str.hit{stroke:#e6b95f;filter:drop-shadow(0 0 4px #e6b95f)}
+.pk-sl,.pk-note{fill:currentColor;font-size:11px;opacity:.7}
+.pk-arrow{fill:#e6b95f;font-size:44px;text-anchor:middle;font-weight:700}
+.pk-arrow.pk-mute{fill:#9aa}.pk-arrow.ghost{opacity:.35}.pk-arrow.acc{fill:#ffd978}
+.pk-pick circle{fill:#e6b95f;opacity:0;transition:transform .12s linear,opacity .1s}
+.pk-pick.on circle{opacity:1}
+.pk-pick{transition:transform .12s linear}
+.pk-fing circle{fill:#e6b95f;opacity:0}
+.pk-fing text{fill:#10142e;font-weight:700;font-size:13px;text-anchor:middle}
+.pk-fing:not(.on) text{opacity:0}
+.pk-fing.on circle{opacity:1}
+.pk-grid{display:grid;grid-template-columns:repeat(var(--cols,8),minmax(0,1fr));gap:6px}
+.pk-cell{display:grid;justify-items:center;gap:2px;padding:6px 2px;border-radius:10px;border:1px solid rgba(255,255,255,.15);transition:background .08s,transform .08s}
+.pk-cell i{font-style:normal;font-size:.75rem;opacity:.7}
+.pk-cell b{font-size:1.2rem}
+.pk-cell.beat{border-color:rgba(230,185,95,.5)}
+.pk-cell.acc b{color:#ffd978;text-shadow:0 0 6px #e6b95f}
+.pk-cell.pk-skip,.pk-cell.pk-mute{opacity:.7}
+.pk-cell.done{opacity:.45}
+.pk-cell.cur{background:#e6b95f;color:#10142e;transform:scale(1.08);opacity:1}
+@media (prefers-reduced-motion:reduce){.pk-pick,.pk-pick circle,.pk-cell{transition:none}}
