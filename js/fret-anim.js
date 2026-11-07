@@ -8,6 +8,7 @@
    Notation (faParse): notes are  <string><fret>[:<finger>][h|p|/]  with strings e B G D A E (e = thin high E, E = thick low E),
    h = hammer-on, p = pull-off, / = slide to this note, :x = no finger shown, and | starts a new phrase.  e.g.  "e5 e7h e5p | B5 B7h B5p" */
 var FA={spec:null,phrases:[],flat:[],i:-1,drawnP:-1,drawnI:-2,playing:false,tNext:0,count:0,timer:0,board:null,per:1,loop:true,click:true,ownClick:false,built:false,mounted:false};
+var FA_ENG=FA;   /* the engine that owns the metronome box right now: FA here, PK in pick-anim.js */
 var FA_STR=['High E','B','G','D','A','Low E'], FA_LET={e:0,B:1,G:2,D:3,A:4,E:5}, FA_FINGER=['index','middle','ring','little'];
 if(window.__FRETROAD_TEST){ window.__FRETROAD_TEST.FA=FA; }
 /* fingers default to "fret minus the lowest fretted fret of the phrase, plus one" (max 4); give :n to override, :x for none */
@@ -39,33 +40,39 @@ var FA_METRO='<div class="dm-head"><b>Metronome</b><span class="mdots dm-dots" i
  '<input type="range" id="dmBpm" min="30" max="240" step="1" aria-label="Tempo slider">'+
  '<div class="dm-row"><button class="btn primary" id="dmGo">Start</button><button class="btn" id="dmTap">Tap tempo</button><label>Time<select id="dmSig"></select></label></div>'+
  '<label class="dm-click"><input type="checkbox" id="dmClick" checked> Click along with Play</label>';
-function faBuild(){
-  if(FA.built) return; FA.built=true;
-  var park=document.createElement('div'); park.id='faPark'; park.hidden=true; document.body.appendChild(park);
-  var blk=document.createElement('div'); blk.id='faBlock'; blk.innerHTML=FA_BLOCK; park.appendChild(blk);
+function faBuildMetro(){
+  if($('#drMetro')) return;
+  var park=$('#faPark'); if(!park){ park=document.createElement('div'); park.id='faPark'; park.hidden=true; document.body.appendChild(park); }
   var mb=document.createElement('div'); mb.id='drMetro'; mb.className='dr-metro'; mb.setAttribute('role','group'); mb.setAttribute('aria-label','Drill metronome'); mb.innerHTML=FA_METRO; park.appendChild(mb);
-  FA.board=createBoard($('#boardD'),function(s,f){ pluck(OPEN[s]+f); FA.board.vib(s); });
-  FA.click=save.pathClick!==false; $('#dmClick').checked=FA.click;
-  $('#dPlay').addEventListener('click',function(){ FA.playing?faPause():faPlay(); });
-  $('#dRestart').addEventListener('click',function(){ faPause(); FA.i=-1; faRender(-1); });
-  $('#dPrev').addEventListener('click',function(){ faPause(); if(FA.i<=0){ FA.i=-1; faRender(-1); return; } FA.i--; faNote(FA.i,faClock()); });
-  $('#dNext').addEventListener('click',function(){ faPause(); if(FA.i>=FA.flat.length-1) return; FA.i++; faNote(FA.i,faClock()); });
-  $('#dLoop').addEventListener('change',function(){ FA.loop=this.checked; });
-  $('#dPer').addEventListener('change',function(){ FA.per=+this.value; });
+  FA.click=save.pathClick!==false; PK_CLICK_SYNC(); $('#dmClick').checked=FA.click;
   var sel=$('#dmSig'); SIGS.slice().sort(function(a,b){return a[1]-b[1]||a[0]-b[0]}).forEach(function(s){var o=document.createElement('option'); o.value=s[0]+'/'+s[1]; o.textContent=s[0]+'/'+s[1]; sel.appendChild(o)});
   sel.addEventListener('change',function(){ var p=this.value.split('/'); MT.num=+p[0]; MT.den=+p[1]; metroSet('num',+p[0]); MT.den=+p[1]; metroSet('den',+p[1]); $('#mSig').value=this.value; });
   $('#dmBpm').addEventListener('input',function(){ metroSet('bpm',+this.value); });
   $('#dmBpmN').addEventListener('change',function(){ metroSet('bpm',+this.value||MT.bpm); });
   $('#dmMinus').addEventListener('click',function(){ metroSet('bpm',MT.bpm-1); });
   $('#dmPlus').addEventListener('click',function(){ metroSet('bpm',MT.bpm+1); });
-  $('#dmGo').addEventListener('click',function(){ FA.ownClick=false; MT.on?metroStop():metroStart(); });
+  $('#dmGo').addEventListener('click',function(){ FA_ENG.ownClick=false; MT.on?metroStop():metroStart(); });
   $('#dmTap').addEventListener('click',function(){ $('#mTap').click(); });
-  $('#dmClick').addEventListener('change',function(){ FA.click=this.checked; save.pathClick=this.checked; persist(); });
+  $('#dmClick').addEventListener('change',function(){ FA.click=this.checked; PK_CLICK_SYNC(); save.pathClick=this.checked; persist(); });
+}
+function PK_CLICK_SYNC(){ if(window.PK) PK.click=FA.click; }
+function faBuild(){
+  if(FA.built) return; FA.built=true;
+  faBuildMetro();
+  var park=$('#faPark');
+  var blk=document.createElement('div'); blk.id='faBlock'; blk.innerHTML=FA_BLOCK; park.appendChild(blk);
+  FA.board=createBoard($('#boardD'),function(s,f){ pluck(OPEN[s]+f); FA.board.vib(s); });
+  $('#dPlay').addEventListener('click',function(){ FA.playing?faPause():faPlay(); });
+  $('#dRestart').addEventListener('click',function(){ faPause(); FA.i=-1; faRender(-1); });
+  $('#dPrev').addEventListener('click',function(){ faPause(); if(FA.i<=0){ FA.i=-1; faRender(-1); return; } FA.i--; faNote(FA.i,faClock()); });
+  $('#dNext').addEventListener('click',function(){ faPause(); if(FA.i>=FA.flat.length-1) return; FA.i++; faNote(FA.i,faClock()); });
+  $('#dLoop').addEventListener('change',function(){ FA.loop=this.checked; });
+  $('#dPer').addEventListener('change',function(){ FA.per=+this.value; });
 }
 /* show a sequence in a screen: slot gets the board block, metroSlot gets the metronome box.
    spec = {id, phrases, stages?:[{name,tip}], tip?, per?, loop?, noPlay?, onRound?} (phrase.si = index into stages) */
 function faMount(slot,metroSlot,spec){
-  faBuild(); faPause();
+  faBuild(); faPause(); if(window.pkPark) pkPark(); FA_ENG=FA;
   slot.appendChild($('#faBlock')); metroSlot.appendChild($('#drMetro')); document.body.classList.add('on-drill'); FA.mounted=true;
   FA.spec=spec; FA.phrases=spec.phrases; FA.flat=[];
   FA.phrases.forEach(function(ph,p){ ph.steps.forEach(function(st,k){ FA.flat.push({p:p,k:k,s:st.s,f:st.f,fin:st.fin,t:st.t}); }); });
@@ -76,10 +83,11 @@ function faMount(slot,metroSlot,spec){
   $('#dmSig').value=MT.num+'/'+MT.den; faMetroSync(); faRender(-1);
 }
 function faPark(){
-  if(!FA.built) return; faPause();
-  var p=$('#faPark'); p.appendChild($('#faBlock')); p.appendChild($('#drMetro')); document.body.classList.remove('on-drill'); FA.mounted=false;
+  var p=$('#faPark'); if(!p) return; faPause(); if(window.pkPause) pkPause();
+  ['#faBlock','#pkBlock','#drMetro'].forEach(function(id){ var e=$(id); if(e) p.appendChild(e); });
+  document.body.classList.remove('on-drill'); FA.mounted=false; if(window.PK) PK.mounted=false;
 }
-function faUnmount(){ if(FA.built&&FA.mounted) faPark(); }
+function faUnmount(){ if(FA.mounted||(window.PK&&PK.mounted)) faPark(); }
 function faPlayLabel(){ var b=$('#dPlay'); b.textContent=FA.playing?'Pause':(FA.i>=FA.flat.length-1&&FA.i>=0?'Play again':(FA.i>=0?'Resume':'Play')); b.setAttribute('aria-pressed',FA.playing?'true':'false'); }
 /* draw note i on the neck (i = -1: the start position, nothing played yet) */
 function faLink(ph,j){
@@ -151,10 +159,10 @@ function faPause(){
 }
 function faIsPlaying(){ return FA.playing; }
 /* tempo or time signature changed while playing: restart the count so the notes stay on the clicks (called from metronome.js) */
-function faTempo(){ if(!FA.playing) return; FA.count=0; FA.tNext=(FA.click&&MT.on)?MT.next:faClock()+.06; }
+function faTempo(){ var E=FA_ENG; if(!E.playing) return; E.count=0; E.tNext=(E.click&&MT.on)?MT.next:faClock()+.06; }
 /* keep the metronome box in step with MT (called from metronome.js) */
 function faMetroSync(){
-  if(!FA.built||!$('#dmGo')) return;
+  if(!$('#dmGo')) return;
   $('#dmBpm').value=MT.bpm; $('#dmBpmN').value=MT.bpm;
   var go=$('#dmGo'); go.textContent=MT.on?'Stop':'Start'; go.classList.toggle('primary',!MT.on);
   var spec=meterSpec(MT.num,MT.den), d=$('#dmDots'), h='';
