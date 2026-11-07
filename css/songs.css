@@ -216,3 +216,27 @@ html.light .storyfab{background:rgba(255,255,255,.92);color:#1c2033;border-color
 .plname{display:flex;flex-direction:column;flex:1;min-width:120px}.plname small{color:var(--haze)}
 .plactive{color:var(--brass,#e6b95f);font-weight:700;font-size:.85rem}
 .pladd{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}.pladd input{flex:1;min-width:140px}
+
+/* Fret Paths drills: the header metronome is hidden here and the screen carries its own box at the top right */
+body.on-drill #metroBtn,body.on-drill #metro{display:none!important}
+.dr-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px 28px;align-items:start;margin-bottom:12px}
+.dr-top h1{font-size:clamp(2rem,4.4vw,3rem)}
+.dr-metro{width:min(100%,310px);padding:14px 16px;border-radius:20px;border:1px solid rgba(230,185,95,.4);background:linear-gradient(180deg,rgba(14,20,58,.96),rgba(8,12,38,.97));box-shadow:0 18px 50px -12px rgba(0,0,0,.6);display:grid;gap:10px}
+html.light .dr-metro{background:rgba(255,255,255,.96)}
+.dm-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.dm-head b{font-size:1.1rem}
+.dm-dots{margin:0;min-height:20px;flex-wrap:nowrap;gap:6px}.dm-dots i{width:16px;height:16px}
+.dm-bpm{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--haze)}
+.dm-bpm input[type=number]{width:6ch;background:rgba(238,234,248,.08);border:1px solid var(--line);border-radius:8px;color:var(--moon);padding:6px;font:700 1.25rem var(--f-body,inherit);text-align:center}
+html.light .dm-bpm input[type=number]{color:#1c2033}
+.dr-metro input[type=range]{width:100%;accent-color:var(--brass)}
+.dm-row{display:flex;gap:8px;align-items:end;flex-wrap:wrap}.dm-row label{display:grid;gap:3px;font-size:.82rem;color:var(--haze)}
+.dm-click{display:flex;align-items:center;gap:8px;font-size:.88rem;color:var(--haze)}
+#dStage{margin:0 0 12px}
+.dr-cap{margin:14px 0 4px}
+.dr-now{font-size:clamp(1.5rem,3.4vw,2.2rem);font-weight:700;line-height:1.15}
+.dr-cap .seq{margin:6px 0 10px}.dr-cap .chip{font-size:1.05rem;min-width:2.4ch;text-align:center}
+.dr-prog{height:6px;border-radius:99px;background:rgba(238,234,248,.12);overflow:hidden;max-width:640px}
+.dr-prog i{display:block;height:100%;width:0;background:var(--glass);border-radius:99px;transition:width .12s linear}
+.dr-acts{margin:12px 0 6px}.dr-opt{display:inline-flex;align-items:center;gap:8px;color:var(--haze)}
+@media (max-width:720px){.dr-top{grid-template-columns:1fr}.dr-metro{width:100%}}
+@media (prefers-reduced-motion:reduce){.dr-prog i{transition:none}}

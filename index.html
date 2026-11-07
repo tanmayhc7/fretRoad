@@ -9,9 +9,9 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/albert-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=20261102f">
-<link rel="stylesheet" href="css/songs.css?v=20261102f">
-<link rel="stylesheet" href="css/redesign.css?v=20261102f">
+<link rel="stylesheet" href="css/style.css?v=20261107a">
+<link rel="stylesheet" href="css/songs.css?v=20261107a">
+<link rel="stylesheet" href="css/redesign.css?v=20261107a">
 </head>
 <!-- fretRoad. Copyright (C) 2026 Tanmay Chandavarkar. Free software under the GNU AGPL-3.0; source: https://github.com/tanmayhc7/FretRoad -->
 <body><a class="skip" href="#stoplist">Skip to the stops</a><div id="skybg"><canvas id="sky"></canvas></div>
@@ -211,6 +211,42 @@
     <div class="reveal" id="pResult" hidden></div>
   </section>
 
+  <!-- DRILL: animated fret paths -->
+  <section id="v-path" hidden>
+    <div class="lv-head"><button class="btn" id="dBack">Back to the map</button><span class="where" id="dWhere"></span></div>
+    <div class="dr-top">
+      <div>
+        <h1 id="dTitle"></h1>
+        <p class="jsub" id="dSub"></p>
+      </div>
+      <div class="dr-metro" id="drMetro" role="group" aria-label="Drill metronome">
+        <div class="dm-head"><b>Metronome</b><span class="mdots dm-dots" id="dmDots" aria-hidden="true"></span></div>
+        <div class="dm-bpm"><button class="btn" id="dmMinus" aria-label="Slower">&minus;</button><span><input type="number" id="dmBpmN" min="30" max="240" aria-label="Tempo in beats per minute"> bpm</span><button class="btn" id="dmPlus" aria-label="Faster">+</button></div>
+        <input type="range" id="dmBpm" min="30" max="240" step="1" aria-label="Tempo slider">
+        <div class="dm-row"><button class="btn primary" id="dmGo">Start</button><button class="btn" id="dmTap">Tap tempo</button><label>Time<select id="dmSig"></select></label></div>
+        <label class="dm-click"><input type="checkbox" id="dmClick" checked> Click along with Play</label>
+      </div>
+    </div>
+    <div class="seq" id="dStage" aria-label="Stages of this drill"></div>
+    <div class="board-wrap" id="boardD"></div>
+    <div class="dr-cap" id="dCap" aria-live="polite">
+      <div class="dr-now" id="dNow"></div>
+      <p class="jsub" id="dNowSub"></p>
+      <div class="seq" id="dSeq" aria-label="The four frets in this group"></div>
+      <div class="dr-prog" aria-hidden="true"><i id="dProg"></i></div>
+      <p class="jsub" id="dTip"></p>
+    </div>
+    <div class="acts dr-acts">
+      <button class="btn primary" id="dPlay">Play</button>
+      <button class="btn" id="dPrev" aria-label="Previous note">&lsaquo; Note</button>
+      <button class="btn" id="dNext" aria-label="Next note">Note &rsaquo;</button>
+      <button class="btn quiet" id="dRestart">Restart</button>
+      <label class="dr-opt"><input type="checkbox" id="dLoop" checked> Loop</label>
+      <label class="dr-opt">Notes per click <select id="dPer"><option value="1">1</option><option value="2">2</option></select></label>
+    </div>
+    <p class="jsub">Each dot shows the fret number. The brass dot is the note to play now, teal dots are already played, dashed dots are coming next, and the pulsing ring is where the next group starts. Use the Sound button in the top bar to mute the notes.</p>
+  </section>
+
   <!-- SONGS -->
   <section id="v-songs" hidden>
     <div class="lv-head"><button class="btn" id="songsBack">Back to the map</button></div>
@@ -299,64 +335,65 @@
 </div>
 <div id="toastHost" aria-live="polite"></div>
 
-<script src="js/core.js?v=20261102f"></script>
-<script src="js/prefs.js?v=20261102f"></script>
-<script src="js/audio.js?v=20261102f"></script>
-<script src="js/fretboard.js?v=20261102f"></script>
-<script src="js/story-core.js?v=20261102f"></script>
-<script src="js/world/world-core.js?v=20261102f"></script>
-<script src="js/world/dawn.js?v=20261102f"></script>
-<script src="js/world/detail.js?v=20261102f"></script>
-<script src="js/world/atmos.js?v=20261102f"></script>
-<script src="js/world/delhi.js?v=20261102f"></script>
-<script src="js/world/valley.js?v=20261102f"></script>
-<script src="js/stories/jordan.js?v=20261102f"></script>
-<script src="js/stories/heer.js?v=20261102f"></script>
-<script src="js/levels-ch1.js?v=20261102f"></script>
-<script src="js/level-tools.js?v=20261102f"></script>
-<script src="js/levels-ch2.js?v=20261102f"></script>
-<script src="js/levels-ch3.js?v=20261102f"></script>
-<script src="js/levels-ch4.js?v=20261102f"></script>
-<script src="js/levels-basics.js?v=20261102f"></script>
-<script src="js/chapters.js?v=20261102f"></script>
-<script src="js/quiz-bank.js?v=20261102f"></script>
-<script src="js/quiz-bank-2.js?v=20261102f"></script>
-<script src="js/quiz-ui.js?v=20261102f"></script>
-<script src="js/views.js?v=20261102f"></script>
-<script src="js/theory.js?v=20261102f"></script>
-<script src="js/quiz-basics.js?v=20261102f"></script>
-<script src="js/drills.js?v=20261102f"></script>
-<script src="js/drills-more.js?v=20261102f"></script>
-<script src="js/drills-extra.js?v=20261102f"></script>
-<script src="js/drills-noguitar.js?v=20261102f"></script>
-<script src="js/rhythm.js?v=20261102f"></script>
-<script src="js/metronome.js?v=20261102f"></script>
-<script src="js/mic.js?v=20261102f"></script>
-<script src="js/songs/chords.js?v=20261102f"></script>
-<script src="js/songs/chart.js?v=20261102f"></script>
-<script src="js/songs/ocr.js?v=20261102f"></script>
-<script src="js/songs/diagram.js?v=20261102f"></script>
-<script src="js/songs/backing.js?v=20261102f"></script>
-<script src="js/songs/listen.js?v=20261102f"></script>
-<script src="js/songs/songs-ui.js?v=20261102f"></script>
-<script src="js/songs/jam-ui.js?v=20261102f"></script>
-<script src="js/songs/analysis.js?v=20261102f"></script>
-<script src="js/songs/recording.js?v=20261102f"></script>
-<script src="js/ai/ai.js?v=20261102f"></script>
-<script src="js/ai/riff.js?v=20261102f"></script>
-<script src="js/finder.js?v=20261102f"></script>
-<script src="js/songs/tunings.js?v=20261102f"></script>
-<script src="js/ai/ai-ui.js?v=20261102f"></script>
-<script src="js/play.js?v=20261102f"></script>
-<script src="js/finger-ex.js?v=20261102f"></script>
-<script src="js/profiles.js?v=20261102f"></script>
-<script src="js/warmup.js?v=20261102f"></script>
-<script src="js/tour.js?v=20261102f"></script>
-<script src="js/tester.js?v=20261102f"></script>
-<script src="js/feedback.js?v=20261102f"></script>
-<script src="js/backup.js?v=20261102f"></script>
-<script src="js/cast.js?v=20261102f"></script>
-<script src="js/landing.js?v=20261102f"></script>
-<script src="js/main.js?v=20261102f"></script>
+<script src="js/core.js?v=20261107a"></script>
+<script src="js/prefs.js?v=20261107a"></script>
+<script src="js/audio.js?v=20261107a"></script>
+<script src="js/fretboard.js?v=20261107a"></script>
+<script src="js/story-core.js?v=20261107a"></script>
+<script src="js/world/world-core.js?v=20261107a"></script>
+<script src="js/world/dawn.js?v=20261107a"></script>
+<script src="js/world/detail.js?v=20261107a"></script>
+<script src="js/world/atmos.js?v=20261107a"></script>
+<script src="js/world/delhi.js?v=20261107a"></script>
+<script src="js/world/valley.js?v=20261107a"></script>
+<script src="js/stories/jordan.js?v=20261107a"></script>
+<script src="js/stories/heer.js?v=20261107a"></script>
+<script src="js/levels-ch1.js?v=20261107a"></script>
+<script src="js/level-tools.js?v=20261107a"></script>
+<script src="js/levels-ch2.js?v=20261107a"></script>
+<script src="js/levels-ch3.js?v=20261107a"></script>
+<script src="js/levels-ch4.js?v=20261107a"></script>
+<script src="js/levels-basics.js?v=20261107a"></script>
+<script src="js/chapters.js?v=20261107a"></script>
+<script src="js/quiz-bank.js?v=20261107a"></script>
+<script src="js/quiz-bank-2.js?v=20261107a"></script>
+<script src="js/quiz-ui.js?v=20261107a"></script>
+<script src="js/views.js?v=20261107a"></script>
+<script src="js/theory.js?v=20261107a"></script>
+<script src="js/quiz-basics.js?v=20261107a"></script>
+<script src="js/drills.js?v=20261107a"></script>
+<script src="js/drills-more.js?v=20261107a"></script>
+<script src="js/drills-extra.js?v=20261107a"></script>
+<script src="js/drills-noguitar.js?v=20261107a"></script>
+<script src="js/drills-paths.js?v=20261107a"></script>
+<script src="js/rhythm.js?v=20261107a"></script>
+<script src="js/metronome.js?v=20261107a"></script>
+<script src="js/mic.js?v=20261107a"></script>
+<script src="js/songs/chords.js?v=20261107a"></script>
+<script src="js/songs/chart.js?v=20261107a"></script>
+<script src="js/songs/ocr.js?v=20261107a"></script>
+<script src="js/songs/diagram.js?v=20261107a"></script>
+<script src="js/songs/backing.js?v=20261107a"></script>
+<script src="js/songs/listen.js?v=20261107a"></script>
+<script src="js/songs/songs-ui.js?v=20261107a"></script>
+<script src="js/songs/jam-ui.js?v=20261107a"></script>
+<script src="js/songs/analysis.js?v=20261107a"></script>
+<script src="js/songs/recording.js?v=20261107a"></script>
+<script src="js/ai/ai.js?v=20261107a"></script>
+<script src="js/ai/riff.js?v=20261107a"></script>
+<script src="js/finder.js?v=20261107a"></script>
+<script src="js/songs/tunings.js?v=20261107a"></script>
+<script src="js/ai/ai-ui.js?v=20261107a"></script>
+<script src="js/play.js?v=20261107a"></script>
+<script src="js/finger-ex.js?v=20261107a"></script>
+<script src="js/profiles.js?v=20261107a"></script>
+<script src="js/warmup.js?v=20261107a"></script>
+<script src="js/tour.js?v=20261107a"></script>
+<script src="js/tester.js?v=20261107a"></script>
+<script src="js/feedback.js?v=20261107a"></script>
+<script src="js/backup.js?v=20261107a"></script>
+<script src="js/cast.js?v=20261107a"></script>
+<script src="js/landing.js?v=20261107a"></script>
+<script src="js/main.js?v=20261107a"></script>
 </body>
 </html>

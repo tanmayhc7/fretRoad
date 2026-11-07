@@ -43,13 +43,14 @@ function metroShow(){
   while(MT.q.length&&MT.q[0].t<=now){
     var e=MT.q.shift(); var ds=$('#mDots').children;
     for(var i=0;i<ds.length;i++) ds[i].classList.toggle('on',i===e.i);
+    if(window.pathMetroBeat) pathMetroBeat(e.i);
     $('#metroBtn').classList.add('beat'); setTimeout(function(){$('#metroBtn').classList.remove('beat')},70);
   }
   MT.raf=requestAnimationFrame(metroShow);
 }
-function metroStart(){
+function metroStart(at){
   initAudio(); if(!ac) return; if(ac.state==='suspended') ac.resume();
-  if(MT.on) return; MT.on=true; MT.idx=0; MT.next=ac.currentTime+.06; MT.q=[];
+  if(MT.on) return; MT.on=true; MT.idx=0; MT.next=at||ac.currentTime+.06; MT.q=[];
   metroSchedule(); MT.timer=setInterval(metroSchedule,25); MT.raf=requestAnimationFrame(metroShow);
   $('#mGo').textContent='Stop'; $('#mGo').classList.add('primary'); metroLabel();
 }
@@ -58,13 +59,14 @@ function metroStop(){
   var ds=$('#mDots').children; for(var i=0;i<ds.length;i++) ds[i].classList.remove('on');
   $('#mGo').textContent='Start'; $('#mGo').classList.remove('primary'); metroLabel();
 }
-function metroLabel(){$('#metroBtn').textContent=MT.on?('Metronome · '+MT.bpm):'Metronome'}
+function metroLabel(){$('#metroBtn').textContent=MT.on?('Metronome · '+MT.bpm):'Metronome'; if(window.pathMetroSync) pathMetroSync();}
 function metroSet(k,v){
   if(k==='bpm') MT.bpm=Math.max(30,Math.min(240,Math.round(v)));
   else MT[k]=v;
   if(!save.metro) save.metro={}; save.metro.bpm=MT.bpm; save.metro.num=MT.num; save.metro.den=MT.den; save.metro.subdiv=MT.subdiv; persist();
   $('#mBpm').value=MT.bpm; $('#mBpmN').value=MT.bpm; metroDots(); metroLabel();
   if(MT.on){MT.idx=0; MT.q=[]; MT.next=ac.currentTime+.06;}
+  if(window.pathTempo) pathTempo();
 }
 function metroBar(sig,bpm,bars){
   initAudio(); if(!ac) return; if(ac.state==='suspended') ac.resume();
