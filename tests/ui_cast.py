@@ -7,7 +7,7 @@ RCV='file://'+ROOT+'/cast/receiver.html'
 res=[]
 def check(n,c,x=''):
     res.append(bool(c)); print(('PASS ' if c else 'FAIL ')+n+(' '+str(x) if (x and not c) else ''))
-save={'done':[1,2,3,4],'passed':[1,2,3,4],'best':{},'intro':True,'story':'jordan','chSeen':[1],'tour':1,'warm':{'level':'intermediate','days':{}},
+save={'done':[1,2,3,4],'passed':[1,2,3,4],'best':{},'intro':True,'story':'jordan','chSeen':[1],'tour':1,'warm':{'level':'intermediate','track':'finger','days':{}},
       'songs':[{'id':'s1','title':'Tune','text':'Tune\n\n[Verse]\nG\nla la\nD\nla la\nEm\nla la\nC\nla'}]}
 FAKE="""
 window.__sent=[]; window.__sessionOn=false; var listeners=[];

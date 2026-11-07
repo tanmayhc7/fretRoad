@@ -147,29 +147,13 @@ function showResult(){
 }
 function drawMods(){
   var host=$('#mods'); host.innerHTML='';
-  /* Strum Lab and Fingerstyle Lab: two blocks, each with Beginner, Intermediate and Advanced levels (drills-pick.js) */
-  (window.PICK_FAMILIES||[]).forEach(function(fam){
-    var box=document.createElement('section'); box.className='lab lab-'+fam.id; box.setAttribute('aria-label',fam.name);
-    box.innerHTML='<h3 class="labname">'+fam.name+'</h3><p class="jsub">'+fam.blurb+'</p>'; host.appendChild(box);
-    ['Beginner','Intermediate','Advanced'].forEach(function(tier){
-      var h=document.createElement('h4'); h.className='labtier'; h.textContent=tier; box.appendChild(h);
-      var grid=document.createElement('div'); grid.className='mods'; box.appendChild(grid);
-      PRACTICE.filter(function(m){return m.family===fam.id&&m.tier===tier}).forEach(function(M){
-        var runs=save.pathRuns&&save.pathRuns[M.id];
-        var b=document.createElement('button'); b.className='mod'; b.dataset.id=M.id;
-        b.innerHTML='<strong>'+M.name+'</strong><span class="d">'+M.desc+'</span><span class="tag">Watch and play along · no mic'+(runs?' · played '+runs+(runs===1?' time':' times'):'')+'</span>';
-        b.addEventListener('click',function(){location.hash='practice-'+M.id});
-        grid.appendChild(b);
-      });
-    });
-  });
   ['Beginner','Intermediate','Advanced'].forEach(function(tier){
     var h=document.createElement('h3'); h.className='tier'; h.textContent=tier; host.appendChild(h);
     var grid=document.createElement('div'); grid.className='mods'; host.appendChild(grid);
-    PRACTICE.map(function(m,i){return [m,i]}).filter(function(a){return a[0].tier===tier&&!a[0].family}).sort(function(a,b){return (a[0].needs-b[0].needs)||(a[1]-b[1])}).map(function(a){return a[0]}).forEach(function(M){
+    PRACTICE.map(function(m,i){return [m,i]}).filter(function(a){return a[0].tier===tier}).sort(function(a,b){return (a[0].needs-b[0].needs)||(a[1]-b[1])}).map(function(a){return a[0]}).forEach(function(M){
       var open=practiceOpen(M),best=save.best?save.best[M.id]:undefined,play=(M.type==='play'||M.kind==='tune');
       var b=document.createElement('button'); b.className='mod'+(open?'':' locked'); b.disabled=!open; b.dataset.id=M.id;
-      var runs=save.pathRuns&&save.pathRuns[M.id]; var tag=M.kind==='path'?('Watch and play along · no mic'+(runs?' · played '+runs+(runs===1?' time':' times'):'')):!open?('Clear stop '+M.needs+' to unlock'):(M.kind==='tune'?'Uses the mic':(best!==undefined?'Best '+best+' of '+M.rounds:(play?'Uses the mic':M.rounds+' questions'))+(play||M.kind==='tune'?'':' · no guitar needed'));
+      var runs=save.pathRuns&&save.pathRuns[M.id]; var tag=(M.kind==='path'||M.kind==='pick')?((M.kind==='pick'?(M.family==='strum'?'Strumming · ':'Fingerpicking · '):'')+'Watch and play along · no mic'+(runs?' · played '+runs+(runs===1?' time':' times'):'')):!open?('Clear stop '+M.needs+' to unlock'):(M.kind==='tune'?'Uses the mic':(best!==undefined?'Best '+best+' of '+M.rounds:(play?'Uses the mic':M.rounds+' questions'))+(play||M.kind==='tune'?'':' · no guitar needed'));
       b.innerHTML='<strong>'+M.name+'</strong><span class="d">'+M.desc+'</span><span class="tag'+(play&&open?' mic':'')+'">'+tag+'</span>';
       b.addEventListener('click',function(){location.hash='practice-'+M.id});
       grid.appendChild(b);
