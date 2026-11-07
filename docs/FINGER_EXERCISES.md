@@ -12,4 +12,4 @@ The exercises are common teaching material, rewritten in our own words with our 
 - MusicRadar, [legato workouts](https://www.musicradar.com/how-to/guitar-skills-strengthen-your-fretting-fingers-with-these-slick-legato-workouts) (three-finger hammer-ons and pull-offs, string-skipping, stretches)
 - Applied Guitar Theory, [spider exercises](https://appliedguitartheory.com/lessons/spider-exercises/) (four-fret spiders, string skipping, 1-3-2-4 order, metronome advice)
 
-The data lives in `js/finger-ex.js`; add or swap an exercise there (keep ten per level, each with `text`, `tab`, a three-step `plan` and a starting `bpm`, or `0` for no click).
+Each exercise also carries an `anim` string that drives the animated neck on the Daily screen (notation in `docs/FRET_PATHS.md`). The data lives in `js/finger-ex.js`; add or swap an exercise there (keep ten per level, each with `text`, `tab`, an `anim`, a three-step `plan` and a starting `bpm`, or `0` for no click).

@@ -1,5 +1,5 @@
 /* Daily practice: one finger exercise a day for the player's level (a 10-day cycle, reshuffled each cycle, so none repeats within ten days), a five-minute timer, and a calendar of practised and missed days. */
-var W={ex:null,bump:0,timer:0,left:300,month:null};
+var W={ex:null,bump:0,timer:0,left:300,month:null,lvlTip:false};
 function ymd(d){return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
 function dayKey(){return ymd(new Date());}
 function dayIndex(d){return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5);}
@@ -28,34 +28,59 @@ function warmFind(id){ var f=null; Object.keys(FINGER_EX).forEach(function(k){ F
 function exerciseFor(d,bump){
   var pool=FINGER_EX[warmLevel()||'beginner'], n=dayIndex(d), cyc=Math.floor(n/10), pos=((n%10)+10)%10, order=sshuffle(pool.map(function(_,i){return i}),srand(cyc*2654435761+1));
   var i=order[(pos+(bump||0))%10], x=pool[i];
-  var o={id:x.id,name:x.name,secs:300,text:x.text,tab:x.tab,plan:x.plan,bpm:x.bpm};
+  var o={id:x.id,name:x.name,secs:300,text:x.text,tab:x.tab,plan:x.plan,bpm:x.bpm,anim:x.anim,per:x.per,cue:x.cue,nofinger:x.nofinger};
   if(x.chords){ var pairs=[['G','C'],['C','Am'],['D','G'],['Em','A'],['Am','Dm'],['E','A'],['G','Em'],['D','A']]; o.pair=pairs[Math.floor(r()*pairs.length)]; }
   return o;
 }
 function warmStreak(w){ var d=new Date(), n=0; if(!w.days[ymd(d)]&&w.days[ymd(d)]!=='') d.setDate(d.getDate()-1); while(w.days.hasOwnProperty(ymd(d))){n++; d.setDate(d.getDate()-1);} return n; }
-function showWarm(){ showView('warm'); W.bump=0; W.month=new Date(); W.month.setDate(1); if(!warmLevel()) warmAsk(); else warmRender(); }
+function showWarm(){
+  showView('warm'); W.bump=0; W.month=new Date(); W.month.setDate(1); W.lvlTip=false;
+  /* once per visit to the app: point out where the level is changed */
+  try{ if(!sessionStorage.getItem('fr-lvl-tip')){ sessionStorage.setItem('fr-lvl-tip','1'); W.lvlTip=true; } }catch(e){}
+  if(!warmLevel()) warmAsk(); else warmRender();
+}
+/* the level switcher: always visible on the Daily screen */
+function warmLevelRow(){
+  var cur=warmLevel(), row=document.createElement('div'); row.className='lvlrow'+(W.lvlTip?' nudge':''); row.setAttribute('role','group'); row.setAttribute('aria-label','Your level');
+  var l=document.createElement('span'); l.textContent='Your level'; row.appendChild(l);
+  Object.keys(FINGER_LEVELS).forEach(function(k){
+    var b=document.createElement('button'); b.type='button'; b.className='btn lvlseg'+(k===cur?' on':''); b.textContent=FINGER_LEVELS[k].name; b.title=FINGER_LEVELS[k].blurb; b.setAttribute('aria-pressed',k===cur?'true':'false');
+    b.addEventListener('click',function(){ if(k===cur) return; warmData().level=k; persist(); W.bump=0; W.lvlTip=false; warmRender(); toast('Switched to '+FINGER_LEVELS[k].name+'. Your streak and calendar stay.'); });
+    row.appendChild(b);
+  });
+  return row;
+}
 /* first time (or when changing): how comfortable are you? Decides which ten exercises you get */
 function warmAsk(){
-  warmStop(); var host=$('#warmRoot'); host.innerHTML='';
+  warmStop(); faPark(); var host=$('#warmRoot'); host.innerHTML='';
   var head=document.createElement('div'); head.className='jam-head'; head.innerHTML='<button class="btn" id="wBack">Back to the map</button><div><h1>Daily practice</h1><p class="jsub">One finger exercise a day, five minutes. How comfortable are you on guitar?</p></div>';
   host.appendChild(head); head.querySelector('#wBack').addEventListener('click',function(){ location.hash='map'; });
   var g=document.createElement('div'); g.className='lvlpick'; host.appendChild(g);
   Object.keys(FINGER_LEVELS).forEach(function(k){
     var b=document.createElement('button'); b.className='btn lvlbtn'; b.type='button'; b.innerHTML='<b></b><span></span>'; b.firstChild.textContent=FINGER_LEVELS[k].name; b.lastChild.textContent=FINGER_LEVELS[k].blurb;
-    b.addEventListener('click',function(){ warmData().level=k; persist(); W.bump=0; warmRender(); }); g.appendChild(b);
+    b.addEventListener('click',function(){ var first=!warmLevel(); warmData().level=k; persist(); W.bump=0; if(first) W.lvlTip=true; warmRender(); }); g.appendChild(b);
   });
   var cur=warmLevel(); if(cur){ var n=document.createElement('p'); n.className='jsub'; n.textContent='You can change this any time. Your streak and calendar stay.'; host.appendChild(n); }
 }
-function warmStop(){ clearInterval(W.timer); W.timer=0; if(typeof BK!=='undefined'&&BK.on) bkStop(); }
+function warmStop(){ clearInterval(W.timer); W.timer=0; if(typeof BK!=='undefined'&&BK.on) bkStop(); if(typeof faPause==='function') faPause(); }
 function warmRender(){
-  warmStop(); var host=$('#warmRoot'), w=warmData(), today=new Date(), tk=ymd(today), done=w.days.hasOwnProperty(tk); host.innerHTML='';
-  var ex=W.ex=exerciseFor(today,W.bump), st=warmStreak(w);
+  warmStop(); faPark(); var host=$('#warmRoot'), w=warmData(), today=new Date(), tk=ymd(today), done=w.days.hasOwnProperty(tk); host.innerHTML='';
+  var ex=W.ex=exerciseFor(today,W.bump), st=warmStreak(w), lvl=warmLevel(), lvName=FINGER_LEVELS[lvl].name;
+  var top=document.createElement('div'); top.className='dr-top'; host.appendChild(top);
+  var left=document.createElement('div'); top.appendChild(left); var mslot=document.createElement('div'); mslot.id='wMetroSlot'; top.appendChild(mslot);
   var head=document.createElement('div'); head.className='jam-head'; head.innerHTML='<button class="btn" id="wBack">Back to the map</button><div><h1>Daily practice</h1><p class="jsub">One exercise a day, five minutes. '+(st?st+(st===1?' day':' days')+' in a row.':'Start a streak today.')+'</p></div>';
-  host.appendChild(head); head.querySelector('#wBack').addEventListener('click',function(){warmStop(); location.hash='map'});
-  var grid=document.createElement('div'); grid.className='warmgrid'; host.appendChild(grid);
+  left.appendChild(head); head.querySelector('#wBack').addEventListener('click',function(){warmStop(); location.hash='map'});
+  left.appendChild(warmLevelRow());
+  if(W.lvlTip){
+    var tip=document.createElement('div'); tip.className='lvltip'; tip.setAttribute('role','note');
+    tip.innerHTML='<p><b>You are on the '+lvName+' level.</b> Each level has its own ten exercises: '+FINGER_LEVELS.beginner.name+' is easy and slow, '+FINGER_LEVELS.intermediate.name+' adds hammer-ons and pull-offs, and '+FINGER_LEVELS.advanced.name+' is four-finger legato and speed. If today feels too easy or too hard, switch with the <b>Your level</b> buttons above, any time. Your streak and calendar stay.</p><div class="row"></div>';
+    mkBtn(tip.querySelector('.row'),'Got it','primary',function(){ W.lvlTip=false; tip.remove(); var r=host.querySelector('.lvlrow'); if(r) r.classList.remove('nudge'); });
+    left.appendChild(tip);
+  }
+  var grid=document.createElement('div'); grid.className='warmgrid wide'; host.appendChild(grid);
   var card=document.createElement('div'); card.className='gcard wcard'; grid.appendChild(card);
   var doneEx=done?warmFind(w.days[tk]):null;
-  card.innerHTML='<span class="lab">'+(done?'Done for today':"Today's exercise")+'</span><h2></h2><p class="wtext"></p><div class="wchords"></div><pre class="wtab" hidden></pre><ol class="wplan" hidden></ol><div class="wtimer" id="wTimer"></div><div class="row"></div>';
+  card.innerHTML='<span class="lab">'+(done?'Done for today':"Today's exercise")+' · '+lvName+'</span><h2></h2><p class="wtext"></p><div class="wanim" id="wAnim"></div><div class="wchords"></div><div class="wtimer" id="wTimer"></div><div class="row"></div><pre class="wtab" hidden></pre><ol class="wplan" hidden></ol>';
   card.querySelector('h2').textContent=(doneEx&&doneEx.name!==ex.name&&!W.bump?doneEx.name:ex.name);
   card.querySelector('.wtext').textContent=ex.text;
   if(ex.tab){ var tb=card.querySelector('.wtab'); tb.hidden=false; tb.textContent=ex.tab.join('\n'); tb.setAttribute('aria-label','Tab: '+ex.tab.join(', ')); }
@@ -64,17 +89,21 @@ function warmRender(){
   var tm=card.querySelector('#wTimer'), row=card.querySelector('.row'); W.left=ex.secs;
   function fmt(s){return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2)} tm.textContent=fmt(W.left);
   var bpm=ex.bpm!==undefined?ex.bpm:(ex.pair?72:(/\b(\d\d) bpm/.test(ex.text)?+/\b(\d\d) bpm/.exec(ex.text)[1]:70));
+  /* the animated neck and the metronome box (top right): this exercise's notes, walked one at a time */
+  var phrases=[]; try{ phrases=ex.anim?faParse(ex.anim,{nofinger:ex.nofinger}):[]; }catch(e){ phrases=[]; }
+  if(bpm&&phrases.length) metroSet('bpm',bpm);
+  if(phrases.length) faMount(card.querySelector('#wAnim'),mslot,{id:ex.id,phrases:phrases,per:ex.per||1,loop:true,noPlay:true,tip:ex.cue||''});
   var go=mkBtn(row,'Start the timer','primary',function(){
     if(W.timer){ warmStop(); go.textContent='Resume'; return; }
-    go.textContent='Pause'; initAudio(); if(bpm) bkStart({bpm:bpm,bpc:4,bpb:4,style:'click',seq:ex.pair||['C'],loop:true,countIn:0,vol:.6});
+    go.textContent='Pause'; initAudio();
+    if(phrases.length) faPlay(); else if(bpm) bkStart({bpm:bpm,bpc:4,bpb:4,style:'click',seq:ex.pair||['C'],loop:true,countIn:0,vol:.6});
     W.timer=setInterval(function(){ W.left--; tm.textContent=fmt(Math.max(0,W.left)); if(W.left<=0){ warmStop(); tm.textContent='Time'; warmMark(ex); } },1000);
   });
   var mk2=mkBtn(row,done?'Practised today':'Mark as practised','',function(){ warmStop(); warmMark(ex); });
   if(done) mk2.disabled=true;
   if(!done) mkBtn(row,'Try a different one','quiet',function(){W.bump++; warmRender()});
-  var metro=document.createElement('p'); metro.className='jsub'; metro.textContent=(bpm?'The click runs at '+bpm+' bpm. Start slower if it is not clean, and only speed up when it is.':'This one has no click. Go slowly.')+' Tap "Mark as practised" any time, even if you played without the timer.'; card.appendChild(metro);
+  var metro=document.createElement('p'); metro.className='jsub'; metro.textContent=(phrases.length?(bpm?'The metronome box at the top right is set to '+bpm+' bpm for this one. ':'This one has no click. Go slowly. '):(bpm?'The click runs at '+bpm+' bpm. ':'This one has no click. Go slowly. '))+(bpm?'Start slower if it is not clean, and only speed up when it is. ':'')+'The timer starts the animation and the click together; pause it any time. Tap "Mark as practised" any time, even if you played without the timer.'; card.insertBefore(metro,card.querySelector('.wtab'));
   var tvb=mkBtn(card.querySelector('.row'),'Show on TV','quiet',function(){ if(window.castDaily) castDaily(); toast('Sent to the TV. The timer starts in three seconds.'); }); tvb.classList.add('cast-only'); tvb.hidden=!(window.castConnected&&castConnected());
-  var lv=mkBtn(card.querySelector('.row'),'Level: '+FINGER_LEVELS[warmLevel()].name,'quiet',function(){ warmAsk(); }); lv.setAttribute('aria-label','Change your level');
   var rb=mkBtn(card.querySelector('.row'),'Daily reminder','quiet',function(){openPrefs()}); rb.setAttribute('aria-label','Set a daily reminder');
   grid.appendChild(warmCalendar(w));
 }
