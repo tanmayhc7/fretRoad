@@ -17,6 +17,7 @@ python3 ui_feedback.py      # footer form builds a pre-filled GitHub issue link
 python3 ui_tester.py        # tester build: unlocked, separate save, checklist, mic lab
 python3 ui_analysis.py      # tempo, time signature, chart matching on synthetic songs
 python3 ui_elec.py          # electric guitar pickups and tone lesson: selector, knobs, checklist, blind test
+python3 ui_faq.py          # the FAQs questions stay hidden until the footer button is pressed
 python3 ui_pick.py          # strumming and fingerpicking drills in the tier lists and Daily tracks, drill-only metronome box
 python3 ui_paths.py         # fret-path drills: animated neck walk, exact route, drill-only metronome box
 python3 ui_fingers.py       # daily finger exercises: level question, ten per level, rotation

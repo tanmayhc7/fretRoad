@@ -106,7 +106,7 @@
       <p style="color:var(--haze);margin-top:6px">Drills from first steps to advanced theory. Most open when you clear the stop that teaches them. Cards tagged no guitar needed are open from the start. Cards marked with the mic listen to you play.</p>
       <div id="mods"></div>
     </div>
-    <section class="faq" id="faq" aria-labelledby="faqH">
+    <section class="faq" id="faq" aria-labelledby="faqH" hidden>
       <h2 id="faqH">Questions</h2>
       <details><summary>Is it really free?</summary><p>Yes. fretRoad is free, non-commercial and open source under the AGPL-3.0.</p></details>
       <details><summary>Do I need an account?</summary><p>No. Progress is saved on your device. Players each get their own save, and you can back up to a file from Settings.</p></details>
@@ -119,7 +119,7 @@
     </section>
     <div class="foot">
       <span>Four chapters so far, with more planned. The mic is used only to listen live and never records.</span>
-      <button class="btn quiet" id="faqBtn">FAQ</button>
+      <button class="btn quiet" id="faqBtn" aria-controls="faq" aria-expanded="false">FAQs</button>
       <button class="btn quiet" id="prefBtn">Settings</button>
       <button class="btn quiet" id="tourBtn">Take the tour</button>
       <button class="btn quiet" id="replay">Replay intro</button>
