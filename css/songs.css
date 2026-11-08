@@ -278,3 +278,59 @@ html.light .pk-bg{fill:rgba(255,255,255,.8)}
 .pk-cell.cur{background:#e6b95f;color:#10142e;transform:scale(1.08);opacity:1}
 @media (prefers-reduced-motion:reduce){.pk-pick,.pk-pick circle,.pk-cell{transition:none}}
 @media (max-width:600px){ .pk-cell b{font-size:1rem} }
+
+/* Electric guitar: pickups and tone */
+#v-elec h1{margin:6px 0 4px}
+.el-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px;align-items:start;margin-top:14px}
+@media (max-width:860px){.el-grid{grid-template-columns:1fr}}
+.el-left,.el-right .card{padding:14px 16px;border-radius:20px;border:1px solid rgba(230,185,95,.28);background:rgba(10,15,43,.62);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html.light .el-left,html.light .el-right .card{background:rgba(255,255,255,.78)}
+.el-right{display:grid;gap:12px}
+.el-info h2{margin:0 0 6px;font-size:1.3rem}
+.el-info p{margin:6px 0}
+.el-h{margin:0 0 8px;font-size:1rem}
+#elGt{width:100%;max-width:340px;height:auto;display:block;margin:0 auto}
+#elPlate{width:100%;max-width:440px;height:auto;display:block;margin:10px auto 0;touch-action:none}
+.el-body{fill:#6b3f2a;stroke:rgba(255,255,255,.25);stroke-width:2}
+.el-neck{fill:#3a2418}.el-fret{stroke:#b8a98a;stroke-width:1.5;opacity:.6}
+.el-bridge{fill:#a9adbb}
+.el-pk rect{fill:#1b1b22;stroke:#55556a;stroke-width:2;transition:fill .15s,stroke .15s,filter .15s}
+.el-pk text{fill:currentColor;font-size:11px;opacity:.7}
+.el-pk.on rect{fill:#3a2d10;stroke:#e6b95f;filter:drop-shadow(0 0 6px #e6b95f)}
+.el-pk.on text{opacity:1;fill:#ffd978}
+.el-str{stroke:#d9dbe6;stroke-linecap:round;transform-box:fill-box;transform-origin:center}
+.el-sg{cursor:pointer}
+.el-str.hit{animation:elWob .42s ease-out;stroke:#ffd978}
+@keyframes elWob{0%{transform:translateX(-2.4px)}20%{transform:translateX(2.2px)}40%{transform:translateX(-1.6px)}60%{transform:translateX(1px)}80%{transform:translateX(-.5px)}100%{transform:none}}
+.el-plate{fill:rgba(12,16,44,.7);stroke:rgba(230,185,95,.35)}
+html.light .el-plate{fill:rgba(255,255,255,.75)}
+.el-lb{fill:currentColor;font-size:11px;opacity:.85}
+.el-slot{fill:#07081a;stroke:#55556a}
+.el-notch circle{fill:#55556a}.el-notch text{fill:currentColor;font-size:11px;opacity:.6}
+.el-notch.on circle{fill:#e6b95f}.el-notch.on text{opacity:1}.el-notch{cursor:pointer}
+.el-lever{cursor:grab;transition:transform .12s ease-out}
+.el-lever rect{fill:#e6b95f;stroke:#7a5a1a;stroke-width:2}.el-lever line{stroke:#7a5a1a;stroke-width:2}
+.el-lever.hid{opacity:.3}
+.el-lever:focus-visible,.el-knob:focus-visible{outline:2px solid #ffd978;outline-offset:3px}
+.el-knob{cursor:grab}
+.el-knob .kb{fill:#2a2c46;stroke:#e6b95f;stroke-width:2}
+.el-knob .ticks line{stroke:currentColor;stroke-width:1.5;opacity:.6}
+.el-knob .ptr{stroke:#ffd978;stroke-width:3;stroke-linecap:round}
+.el-knob:focus .kb{stroke:#ffd978}
+.kv{font-weight:700}
+.el-seg{display:flex;gap:8px;flex-wrap:wrap}
+.el-posrow,.el-play{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px;align-items:center}
+.el-p b{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.14);margin-right:4px}
+.el-p.on{background:#e6b95f;color:#10142e;border-color:#e6b95f}
+.el-p.on b{background:rgba(16,20,46,.2)}
+.el-meter{display:flex;align-items:center;gap:8px;font-size:.8rem;margin-bottom:8px}
+.el-meter .mt{flex:1;height:10px;border-radius:5px;background:rgba(255,255,255,.12);overflow:hidden}
+.el-meter i{display:block;height:100%;background:linear-gradient(90deg,#8e6ad8,#e6b95f);transition:width .2s}
+#elSpec{width:100%;height:auto;display:block}
+#elSpec rect{fill:#e6b95f;transition:y .15s,height .15s}
+.el-steps{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.el-steps li{display:flex;gap:10px;align-items:flex-start}
+.el-steps b{display:inline-grid;place-items:center;flex:none;width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(255,255,255,.35);font-size:.8rem}
+.el-steps li.on b{background:#e6b95f;color:#10142e;border-color:#e6b95f}
+.el-steps li.on span{opacity:.7}
+@media (prefers-reduced-motion:reduce){.el-str.hit{animation:none}.el-lever,#elSpec rect,.el-meter i,.el-pk rect{transition:none}}
