@@ -95,16 +95,19 @@ function elSteps(){
   $('#elStepN').textContent=n+' of '+EL_STEPS.length;
 }
 /* ---------- drawing ---------- */
-var EL_Y0=0,EL_L=330,EL_YB=345;
-function elPY(x){ return EL_YB-x*EL_L; }
+/* the guitar is drawn lying down: neck on the left, bridge on the right, high E on top (like tab). x = fraction of the string length from the bridge */
+var EL_NUT=44,EL_BR=534,EL_L=EL_BR-EL_NUT,EL_SY=[40,76,112,148,184,220];
+function elPX(x){ return EL_BR-x*EL_L; }
 function elSvgGuitar(){
-  var G=elG(),h='<svg id="elGt" viewBox="0 0 300 380" role="img" aria-label="An electric guitar seen from the front, with the pickups lit that are switched on">';
-  h+='<path class="el-body" d="M62 128 C34 128 16 176 32 222 C16 266 22 336 66 366 C98 388 202 388 234 366 C278 336 284 266 268 222 C284 176 266 128 238 128 C206 112 94 112 62 128Z"/>';
-  h+='<rect class="el-neck" x="124" y="0" width="52" height="130"/>';
-  for(var f=1;f<6;f++) h+='<line class="el-fret" x1="124" x2="176" y1="'+(f*22)+'" y2="'+(f*22)+'"/>';
-  Object.keys(G.pickups).forEach(function(id){ var k=G.pickups[id],y=elPY(k.x); h+='<g class="el-pk" data-pk="'+id+'"><rect x="108" y="'+(y-k.h/2)+'" width="84" height="'+k.h+'" rx="5"/><text x="102" y="'+(y+4)+'" text-anchor="end">'+k.label+'</text></g>'; });
-  h+='<rect class="el-bridge" x="112" y="'+(EL_YB-3)+'" width="76" height="9" rx="3"/>';
-  for(var s=0;s<6;s++){ var x=130+s*8; h+='<g class="el-sg" data-s="'+s+'"><line class="el-str" x1="'+x+'" x2="'+x+'" y1="0" y2="'+(EL_YB+4)+'" stroke-width="'+[1,1.3,1.7,2.2,2.7,3.2][s]+'"/><rect x="'+(x-4)+'" y="0" width="8" height="'+(EL_YB+4)+'" fill="transparent"/></g>'; }
+  var G=elG(),h='<svg id="elGt" viewBox="0 0 580 290" role="img" aria-label="An electric guitar lying down, neck on the left, with the pickups lit that are switched on. Click a string to pluck it.">';
+  h+='<path class="el-body" d="M338 78 C338 24 402 14 440 22 C484 14 552 24 562 78 C578 118 578 168 562 208 C552 262 484 272 440 264 C402 272 338 262 338 212 C350 176 350 114 338 78Z"/>';
+  h+='<rect class="el-neck" x="'+EL_NUT+'" y="22" width="300" height="236"/>';
+  for(var f=1;f<=12;f++){ var fx=EL_NUT+EL_L*(1-Math.pow(2,-f/12)); if(fx>338) break; h+='<line class="el-fret" x1="'+fx.toFixed(1)+'" x2="'+fx.toFixed(1)+'" y1="22" y2="258"/>'; if([3,5,7,9].indexOf(f)>=0) h+='<circle class="el-dot" cx="'+(fx-EL_L*(Math.pow(2,-(f-1)/12)-Math.pow(2,-f/12))/2).toFixed(1)+'" cy="130" r="4"/>'; }
+  h+='<rect class="el-nut" x="'+(EL_NUT-4)+'" y="22" width="5" height="236"/>';
+  Object.keys(G.pickups).forEach(function(id){ var k=G.pickups[id],x=elPX(k.x); h+='<g class="el-pk" data-pk="'+id+'"><rect x="'+(x-k.h/2)+'" y="14" width="'+k.h+'" height="252" rx="6"/><text x="'+x+'" y="284" text-anchor="middle">'+k.label+'</text></g>'; });
+  h+='<rect class="el-bridge" x="'+(EL_BR-3)+'" y="22" width="9" height="236" rx="3"/>';
+  var nm=['e','B','G','D','A','E'];
+  for(var s=0;s<6;s++){ var y=EL_SY[s]; h+='<g class="el-sg" data-s="'+s+'"><text class="el-sn" x="20" y="'+(y+4)+'" text-anchor="middle">'+nm[s]+'</text><line class="el-str" x1="'+EL_NUT+'" x2="'+(EL_BR+2)+'" y1="'+y+'" y2="'+y+'" stroke-width="'+[1.2,1.6,2.1,2.8,3.4,4][s]+'"/><rect x="2" y="'+(y-17)+'" width="'+(EL_BR+8)+'" height="34" fill="transparent"/></g>'; }
   return h+'</svg>';
 }
 function elSvgPlate(){

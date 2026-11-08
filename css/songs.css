@@ -281,27 +281,29 @@ html.light .pk-bg{fill:rgba(255,255,255,.8)}
 
 /* Electric guitar: pickups and tone */
 #v-elec h1{margin:6px 0 4px}
-.el-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px;align-items:start;margin-top:14px}
-@media (max-width:860px){.el-grid{grid-template-columns:1fr}}
+.el-grid{display:grid;grid-template-columns:1fr;gap:16px;align-items:start;margin-top:14px}
+.el-left{display:grid;gap:10px}
 .el-left,.el-right .card{padding:14px 16px;border-radius:20px;border:1px solid rgba(230,185,95,.28);background:rgba(10,15,43,.62);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 html.light .el-left,html.light .el-right .card{background:rgba(255,255,255,.78)}
-.el-right{display:grid;gap:12px}
+.el-right{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+.el-right>.el-seg,.el-right>.el-info{grid-column:1/-1}
+@media (max-width:760px){.el-right{grid-template-columns:1fr}}
 .el-info h2{margin:0 0 6px;font-size:1.3rem}
 .el-info p{margin:6px 0}
 .el-h{margin:0 0 8px;font-size:1rem}
-#elGt{width:100%;max-width:340px;height:auto;display:block;margin:0 auto}
+#elGt{width:100%;max-width:760px;height:auto;display:block;margin:0 auto}
 #elPlate{width:100%;max-width:440px;height:auto;display:block;margin:10px auto 0;touch-action:none}
 .el-body{fill:#6b3f2a;stroke:rgba(255,255,255,.25);stroke-width:2}
-.el-neck{fill:#3a2418}.el-fret{stroke:#b8a98a;stroke-width:1.5;opacity:.6}
+.el-neck{fill:#3a2418}.el-fret{stroke:#b8a98a;stroke-width:1.5;opacity:.6}.el-dot{fill:#b8a98a;opacity:.5}.el-nut{fill:#e8e2cf}.el-sn{fill:#e8e2cf;font-size:13px;font-weight:700}
 .el-bridge{fill:#a9adbb}
 .el-pk rect{fill:#1b1b22;stroke:#55556a;stroke-width:2;transition:fill .15s,stroke .15s,filter .15s}
-.el-pk text{fill:currentColor;font-size:11px;opacity:.7}
+.el-pk text{fill:currentColor;font-size:12px;opacity:.75}
 .el-pk.on rect{fill:#3a2d10;stroke:#e6b95f;filter:drop-shadow(0 0 6px #e6b95f)}
 .el-pk.on text{opacity:1;fill:#ffd978}
 .el-str{stroke:#d9dbe6;stroke-linecap:round;transform-box:fill-box;transform-origin:center}
 .el-sg{cursor:pointer}
 .el-str.hit{animation:elWob .42s ease-out;stroke:#ffd978}
-@keyframes elWob{0%{transform:translateX(-2.4px)}20%{transform:translateX(2.2px)}40%{transform:translateX(-1.6px)}60%{transform:translateX(1px)}80%{transform:translateX(-.5px)}100%{transform:none}}
+@keyframes elWob{0%{transform:translateY(-3.4px)}20%{transform:translateY(3px)}40%{transform:translateY(-2.2px)}60%{transform:translateY(1.4px)}80%{transform:translateY(-.6px)}100%{transform:none}}
 .el-plate{fill:rgba(12,16,44,.7);stroke:rgba(230,185,95,.35)}
 html.light .el-plate{fill:rgba(255,255,255,.75)}
 .el-lb{fill:currentColor;font-size:11px;opacity:.85}
