@@ -22,6 +22,9 @@ with sync_playwright() as p:
         pg.evaluate("location.hash='practice-electricpickups'"); pg.wait_for_selector('#v-elec:not([hidden]) #elGt')
         check(tag+': no sideways scrolling',pg.evaluate("document.documentElement.scrollWidth<=innerWidth"))
         check(tag+': the header metronome is not hidden here',pg.locator('#metroBtn').is_visible() or mobile)
+        ys=pg.evaluate("[...document.querySelectorAll('#elGt .el-sg')].map(g=>g.querySelector('rect').getBoundingClientRect())")
+        check(tag+': the guitar lies down: strings are horizontal and the neck is on the left',pg.evaluate("(()=>{var l=document.querySelector('#elGt .el-str').getBoundingClientRect(); return l.width>l.height*10})()"))
+        check(tag+': every string is a big click target (at least %d px tall) and they do not overlap'%(18 if mobile else 30),all(r['height']>=(18 if mobile else 30) for r in ys) and all(ys[i]['bottom']<=ys[i+1]['top']+1 for i in range(5)),[round(r['height']) for r in ys])
         if mobile:
             check('mobile: no errors',not errs,errs); ctx.close(); continue
         # physics: bridge is brighter than neck, in-between positions differ, tone knob darkens
